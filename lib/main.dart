@@ -20,24 +20,53 @@ class MyApp extends StatelessWidget { // 상속 받음으로써 자기 자신을
     // TODO: implement build
     return MaterialApp(
         title: 'welcome flutter',
-        home: Scaffold( // scaffold 위젯은 material 라이브러리에 속해있다. 제공한다 기본 앱바, 타이틀 그리고 버디속성을, 화면에 위젯 트리를 고정시켜준다.
-          appBar: AppBar(title: Text('welcome to flutter')),
-          body: Center(
-            //child: Text(wordPair.asPascalCase),
-            child: RandomWords(),
-          ),
-        ));
+        home: RandomWords()
+    );
   }
 }
 
 class RandomWordsState extends State<RandomWords>{
+  final _suggestions = <WordPair>[];
+  final _biggerFont = const TextStyle(fontSize: 18.0);
+
   @override
   Widget build(BuildContext context) {
-    final wordPair = WordPair.random();
-    return Text(wordPair.asPascalCase);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('startup name genetator'),
+      ),
+      body: _buildSuggestions(),
+    );
+  }
+
+  Widget _buildSuggestions(){
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: (context, i){ // 홀수일경우 divider를 리턴하고 짝수일 경우 _suggestions변수에 단어를 add 한다.
+        if( i.isOdd) return Divider();
+
+        final index = i ~/ 2; // 2로나눈 몫을 리턴 1,2,3,4 -> 0,1,1,2
+        if( index >= _suggestions.length){
+          _suggestions.addAll(generateWordPairs().take(10));
+        }
+
+        return _buildRow(_suggestions[index]);
+      });
+  }
+
+  Widget _buildRow(WordPair pair) {
+    return ListTile(
+      title: Text(
+        pair.asPascalCase,
+        style: _biggerFont,
+      ),
+    );
   }
 
 }
+
+
 
 class RandomWords extends StatefulWidget{
   @override
